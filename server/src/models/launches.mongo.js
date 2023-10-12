@@ -39,4 +39,4 @@ const launchesSchema = new Schema({
 // Connects LaunchesSchema with 'launches' collection
 module.exports = model("Launch", launchesSchema);
 
-module.exports = launches;
+
