@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 const planetsSchema = new Schema({
   keplerName: {
@@ -8,3 +8,6 @@ const planetsSchema = new Schema({
     required: true,
   },
 });
+
+
+module.exports = model('Planet', planetsSchema)
