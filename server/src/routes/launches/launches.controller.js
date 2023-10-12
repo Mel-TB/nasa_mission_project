@@ -1,15 +1,22 @@
 const {
   getAllLaunches,
-  addNewLaunch,
+  scheduleNewLaunch,
   existsLaunchWithId,
   abortLaunchById,
 } = require("../../models/launches.models");
 
-function httpGetAllLaunches(req, res) {
-  return res.status(200).json(getAllLaunches);
+async function httpGetAllLaunches(req, res) {
+  return res.status(200).json(await getAllLaunches());
 }
 
-function httpAddNewLaunch(req, res) {
+/**
+ * Adds a new launch to the HTTP API.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @return {Promise} - A promise that resolves to the added launch.
+ */
+async function httpAddNewLaunch(req, res) {
   launch = req.body;
 
   if (
@@ -31,7 +38,7 @@ function httpAddNewLaunch(req, res) {
     });
   }
 
-  addNewLaunch(launch);
+  await scheduleNewLaunch(launch);
   res.status(201).json(launch);
 }
 
