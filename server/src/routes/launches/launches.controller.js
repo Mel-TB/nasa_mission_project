@@ -9,6 +9,13 @@ async function httpGetAllLaunches(req, res) {
   return res.status(200).json(await getAllLaunches());
 }
 
+/**
+ * Adds a new launch to the HTTP API.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @return {Promise} - A promise that resolves to the added launch.
+ */
 async function httpAddNewLaunch(req, res) {
   launch = req.body;
 

@@ -21,6 +21,11 @@ function existsLaunchWithId(launchId) {
   return launches.has(launchId);
 }
 
+/**
+ * Retrieves the latest flight number from the launches database.
+ *
+ * @return {number} The latest flight number, or the default flight number if no launches exist.
+ */
 async function getLatestFlightNumber() {
   const latestLaunch = await launchesDB.findOne().sort("-flightNumber");
 
@@ -31,6 +36,11 @@ async function getLatestFlightNumber() {
   return latestLaunch.flightNumber;
 }
 
+/**
+ * Retrieves all launches from the launchesDB collection.
+ *
+ * @return {Promise} Returns a Promise that resolves to an array of launch objects.
+ */
 async function getAllLaunches() {
   return await launchesDB.find(
     {},
@@ -41,6 +51,13 @@ async function getAllLaunches() {
   );
 }
 
+/**
+ * Saves a launch in the database.
+ *
+ * @param {Object} launch - The launch object to be saved.
+ * @return {Promise} - A promise that resolves when the launch is saved.
+ * @throws {Error} - If no matching planet is found.
+ */
 async function saveLaunch(launch) {
   const planet = await planets.findOne({
     keplerName: launch.target,
@@ -61,6 +78,12 @@ async function saveLaunch(launch) {
   );
 }
 
+/**
+ * Schedule a new launch.
+ *
+ * @param {Object} launch - The launch object to be scheduled.
+ * @return {Promise<void>} A promise that resolves when the launch is scheduled.
+ */
 async function scheduleNewLaunch(launch) {
   const newFlightNumber = (await getLatestFlightNumber()) + 1;
   const newLaunch = Object.assign(launch, {
