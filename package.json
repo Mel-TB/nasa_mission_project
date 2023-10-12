@@ -1,0 +1,29 @@
+{
+  "name": "nasa_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install-server": "npm install --prefix server",
+    "install-client": "npm install --prefix client",
+    "server": "npm run watch --prefix server",
+    "client": "npm run start --prefix client",
+    "watch": "npm run server & npm run client",
+    "deploy": "npm run build --prefix client && npm start --prefix server",
+    "deploy-cluster": "npm run build --prefix client && npm run cluster --prefix server",
+    "test": "npm test --prefix server && npm test --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mel-TB/nasa_mission_project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mel-TB/nasa_mission_project/issues"
+  },
+  "homepage": "https://github.com/Mel-TB/nasa_mission_project#readme",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
