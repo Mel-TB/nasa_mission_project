@@ -17,8 +17,10 @@ const launch = {
 
 saveLaunch(launch);
 
-function existsLaunchWithId(launchId) {
-  return launches.has(launchId);
+async function existsLaunchWithId(launchId) {
+  return await launchesDB.findOne({
+    flightNumber: launchId,
+  });
 }
 
 /**
@@ -67,7 +69,7 @@ async function saveLaunch(launch) {
     throw new Error("No matching planet found!");
   }
 
-  await launchesDB.updateOne(
+  await launchesDB.findOneAndUpdate(
     {
       flightNumber: launch.flightNumber,
     },
@@ -96,11 +98,24 @@ async function scheduleNewLaunch(launch) {
   await saveLaunch(newLaunch);
 }
 
-function abortLaunchById(launchId) {
-  const aborted = launches.get(launchId);
-  aborted.upcoming = false;
-  aborted.success = false;
-  return aborted;
+/**
+ * Aborts a launch by its ID.
+ *
+ * @param {number} launchId - The ID of the launch to be aborted.
+ * @return {boolean} Returns true if the launch was successfully aborted, otherwise false.
+ */
+async function abortLaunchById(launchId) {
+  const aborted = await launchesDB.updateOne(
+    {
+      flightNumber: launchId,
+    },
+    {
+      upcoming: false,
+      success: false,
+    }
+  );
+
+  return aborted.modifiedCount === 1;
 }
 
 module.exports = {
