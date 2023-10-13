@@ -7,14 +7,14 @@ const DEFAULT_FLIGHT_NUMBER = 100;
 // const launches = new Map();
 
 const launch = {
-  flightNumber: 100, //flight_number
-  mission: " Kepler Exploration X", //name
-  rocket: "Explorer IS1", //rocket.name
-  launchDate: new Date("December 27, 2030"), //date_local
-  target: "Kepler-442 b", //not applicable
-  customer: ["NASA", "Mel"], // payload.customers for each payload
-  upcoming: true, //upcoming
-  success: true, //success
+  flightNumber: 100,
+  mission: " Kepler Exploration X",
+  rocket: "Explorer IS1",
+  launchDate: new Date("December 27, 2030"),
+  target: "Kepler-442 b",
+  customers: ["NASA", "Mel"],
+  upcoming: true,
+  success: true,
 };
 
 saveLaunch(launch);
@@ -45,12 +45,17 @@ async function populateLaunches() {
     },
   });
 
+  if (response.status !== 200) {
+    console.log("Problem downloading launch data");
+    throw new Error("Problem downloading launch data");
+  }
+
   const launchDocs = response.data.docs;
 
   for (const launchDoc of launchDocs) {
     const payloads = launchDoc["payloads"];
     const customers = payloads.flatMap((payload) => {
-      return payload["customer"];
+      return payload["customers"];
     });
 
     const launch = {
@@ -62,9 +67,11 @@ async function populateLaunches() {
       success: launchDoc["success"],
       customers,
     };
-    console.log(`${launch.flightNumber}, ${launch.mission}`);
+    console.log(
+      `${launch.flightNumber}, ${launch.mission}, ${launch.customers}`
+    );
 
-    // TODO => populate launches collection...
+    await saveLaunch(launch);
   }
 }
 
@@ -92,11 +99,6 @@ async function existsLaunchWithId(launchId) {
   });
 }
 
-/**
- * Retrieves the latest flight number from the launches database.
- *
- * @return {number} The latest flight number, or the default flight number if no launches exist.
- */
 async function getLatestFlightNumber() {
   const latestLaunch = await launchesDB.findOne().sort("-flightNumber");
 
@@ -107,11 +109,6 @@ async function getLatestFlightNumber() {
   return latestLaunch.flightNumber;
 }
 
-/**
- * Retrieves all launches from the launchesDB collection.
- *
- * @return {Promise} Returns a Promise that resolves to an array of launch objects.
- */
 async function getAllLaunches() {
   return await launchesDB.find(
     {},
@@ -122,22 +119,7 @@ async function getAllLaunches() {
   );
 }
 
-/**
- * Saves a launch in the database.
- *
- * @param {Object} launch - The launch object to be saved.
- * @return {Promise} - A promise that resolves when the launch is saved.
- * @throws {Error} - If no matching planet is found.
- */
 async function saveLaunch(launch) {
-  const planet = await planets.findOne({
-    keplerName: launch.target,
-  });
-
-  if (!planet) {
-    throw new Error("No matching planet found!");
-  }
-
   await launchesDB.findOneAndUpdate(
     {
       flightNumber: launch.flightNumber,
@@ -149,13 +131,15 @@ async function saveLaunch(launch) {
   );
 }
 
-/**
- * Schedule a new launch.
- *
- * @param {Object} launch - The launch object to be scheduled.
- * @return {Promise<void>} A promise that resolves when the launch is scheduled.
- */
 async function scheduleNewLaunch(launch) {
+  const planet = await planets.findOne({
+    keplerName: launch.target,
+  });
+
+  if (!planet) {
+    throw new Error("No matching planet found!");
+  }
+
   const newFlightNumber = (await getLatestFlightNumber()) + 1;
   const newLaunch = Object.assign(launch, {
     success: true,
@@ -167,12 +151,6 @@ async function scheduleNewLaunch(launch) {
   await saveLaunch(newLaunch);
 }
 
-/**
- * Aborts a launch by its ID.
- *
- * @param {number} launchId - The ID of the launch to be aborted.
- * @return {boolean} Returns true if the launch was successfully aborted, otherwise false.
- */
 async function abortLaunchById(launchId) {
   const aborted = await launchesDB.updateOne(
     {
