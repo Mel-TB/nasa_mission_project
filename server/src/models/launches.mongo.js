@@ -16,13 +16,13 @@ const launchesSchema = new Schema({
   },
   target: {
     type: String,
-    required: true,
+    required: false,
   },
   launchDate: {
     type: Date,
     required: true,
   },
-  customer: {
+  customers: {
     type: [String],
   },
   upcoming: {
@@ -38,5 +38,3 @@ const launchesSchema = new Schema({
 
 // Connects LaunchesSchema with 'launches' collection
 module.exports = model("Launch", launchesSchema);
-
-
