@@ -25,5 +25,3 @@ app.get("/*", (req, res) => {
 });
 
 module.exports = app;
-
-// xfsNUdq8j9bVDWcI password
