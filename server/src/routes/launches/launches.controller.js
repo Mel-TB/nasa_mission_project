@@ -5,17 +5,15 @@ const {
   abortLaunchById,
 } = require("../../models/launches.models");
 
+const { getPagination } = require("../../services/query");
+
 async function httpGetAllLaunches(req, res) {
-  return res.status(200).json(await getAllLaunches());
+  const { skip, limit } = getPagination(req.query);
+  const launches = await getAllLaunches(skip, limit);
+
+  return res.status(200).json(launches);
 }
 
-/**
- * Adds a new launch to the HTTP API.
- *
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @return {Promise} - A promise that resolves to the added launch.
- */
 async function httpAddNewLaunch(req, res) {
   launch = req.body;
 
@@ -43,13 +41,6 @@ async function httpAddNewLaunch(req, res) {
   res.status(201).json(launch);
 }
 
-/**
- * Aborts a launch by its ID.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @return {Object} The JSON response indicating the success or failure of the operation.
- */
 async function httpAbortLaunch(req, res) {
   const launchId = Number(req.params.id);
 

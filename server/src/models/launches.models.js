@@ -4,20 +4,6 @@ const launchesDB = require("./launches.mongo");
 const planets = require("./planets.mongo");
 
 const DEFAULT_FLIGHT_NUMBER = 100;
-// const launches = new Map();
-
-const launch = {
-  flightNumber: 100,
-  mission: " Kepler Exploration X",
-  rocket: "Explorer IS1",
-  launchDate: new Date("December 27, 2030"),
-  target: "Kepler-442 b",
-  customers: ["NASA", "Mel"],
-  upcoming: true,
-  success: true,
-};
-
-saveLaunch(launch);
 
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
 
@@ -109,14 +95,20 @@ async function getLatestFlightNumber() {
   return latestLaunch.flightNumber;
 }
 
-async function getAllLaunches() {
-  return await launchesDB.find(
-    {},
-    {
-      _id: 0,
-      __v: 0,
-    }
-  );
+async function getAllLaunches(skip, limit) {
+  return await launchesDB
+    .find(
+      {},
+      {
+        _id: 0,
+        __v: 0,
+      }
+    )
+    .sort({
+      flightNumber: 1,
+    })
+    .skip(skip)
+    .limit(limit);
 }
 
 async function saveLaunch(launch) {
