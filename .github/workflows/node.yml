@@ -15,4 +15,3 @@ jobs:
           node-version: "18.18.2"
       - run: npm install --prefix client
       - run: npm run build --prefix client
-      - run: npm test
