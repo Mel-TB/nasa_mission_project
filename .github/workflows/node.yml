@@ -4,27 +4,24 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
     env:
       CI: true
       MONGO_URL: mongodb://localhost/nasa
 
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-        mongodb-version: [7.x]
-
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Use Node.js  ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version}}
+          node-version: ${{ matrix.node-version }}
 
       - name: Use MongoDB in Github Actions
         uses: supercharge/mongodb-github-action@1.10.0
